@@ -34,21 +34,48 @@ public class Main {
 			
 			String[] arr = cline(s);
 			
-			String out1 = arr[0];
-			String out2 = arr[1];
-			String out3 = arr[2];
-			String out4 = arr[3];
-			System.out.println(
-					(out1==null?" ":out1)+"\t"+
-					(out2==null?" ":out2)+"\t"+
-					(out3==null?" ":out3)+"\t"+
-					(out4==null?" ":out4));
-			n++;
+			outJava(arr);
 		}
-		
 		System.out.println(n);
+			
 		
 	}
+	
+	
+	private void ouExcele(String[] arr) {
+
+		String out1 = arr[0];
+		String out2 = arr[1];
+		String out3 = arr[2];
+		String out4 = arr[3];
+		System.out.println(
+				(out1==null?" ":out1)+"\t"+
+				(out2==null?" ":out2)+"\t"+
+				(out3==null?" ":out3)+"\t"+
+				(out4==null?" ":out4));
+	
+
+
+	}
+	
+	
+	private void outJava(String[] arr) {
+
+		String out1 = arr[0];
+		String out2 = arr[1];
+		out1 = out1.replace("`", "");
+		String out3 = arr[2];
+		String out4 = arr[3];
+		System.out.println(
+				"String "+
+				(out1==null?" ":out1)+";//"+
+				(out2==null?" ":out2)+"\t"+
+				(out4==null?" ":out4));
+
+
+	}
+	
+	
 	
 	
 	private String[] cline(String str) {
