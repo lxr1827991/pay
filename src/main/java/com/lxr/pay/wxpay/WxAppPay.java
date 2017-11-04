@@ -13,7 +13,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.lxr.commons.exception.ApplicationException;
 import com.lxr.commons.https.HttpClientConnectionManager;
-import com.lxr.commons.utils.Sha1Util;
+import com.lxr.pay.wxpay.utils.Sha1Util;
 
 import net.sf.json.JSONObject;
 

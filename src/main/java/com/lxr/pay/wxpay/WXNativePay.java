@@ -13,7 +13,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.lxr.commons.exception.ApplicationException;
-import com.lxr.commons.utils.SignUtil;
+
 
 
 /**

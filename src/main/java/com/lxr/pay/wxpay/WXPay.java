@@ -18,12 +18,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import com.lxr.commons.exception.ApplicationException;
-import com.lxr.commons.exception.CommunicationException;
 import com.lxr.commons.https.HttpClientConnectionManager;
-import com.lxr.commons.utils.MessageXMLUtil;
-import com.lxr.commons.utils.RequestHandler;
-import com.lxr.commons.utils.TypeConverUtil;
-import com.lxr.commons.utils.XmlUtils;
+import com.lxr.pay.wxpay.utils.MessageXMLUtil;
+import com.lxr.pay.wxpay.utils.RequestHandler;
+import com.lxr.pay.wxpay.utils.XmlUtils;
+
 
 
 
@@ -324,13 +323,13 @@ public class WXPay {
 			
 			public String getTradeType() {
 				if(STATE_FAIL.equals(result.get("return_code")))
-					throw new CommunicationException(getErrMsg());
+					throw new ApplicationException(getErrMsg());
 				return result.get("trade_type");
 			}
 			
 			public String getTradeState() {
 				if(STATE_FAIL.equals(result.get("return_code")))
-					throw new CommunicationException(getErrMsg());
+					throw new ApplicationException(getErrMsg());
 				return result.get("trade_state");
 
 			}

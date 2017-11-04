@@ -1,6 +1,6 @@
 package com.lxr.pay.alipay;
 
-import com.lxr.commons.utils.BeanUtils;
+
 
 public class AlipayFactory {
 

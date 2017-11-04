@@ -17,8 +17,9 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.lxr.commons.exception.ApplicationException;
-import com.lxr.commons.utils.MD5Util;
-import com.lxr.commons.utils.TenpayUtil;
+import com.lxr.pay.wxpay.utils.MD5Util;
+import com.lxr.pay.wxpay.utils.TenpayUtil;
+
 
 
 

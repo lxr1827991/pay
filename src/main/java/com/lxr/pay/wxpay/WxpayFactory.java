@@ -13,6 +13,8 @@ import org.dom4j.io.SAXReader;
 
 import com.lxr.commons.exception.ApplicationException;
 
+
+
 public class WxpayFactory {
 
 	
