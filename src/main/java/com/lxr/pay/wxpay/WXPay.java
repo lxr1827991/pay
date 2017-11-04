@@ -17,13 +17,13 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import com.lxr.commons.exception.ApplicationException;
+import com.lxr.commons.exception.CommunicationException;
 import com.lxr.commons.https.HttpClientConnectionManager;
 import com.lxr.commons.utils.MessageXMLUtil;
 import com.lxr.commons.utils.RequestHandler;
 import com.lxr.commons.utils.TypeConverUtil;
 import com.lxr.commons.utils.XmlUtils;
-import com.lxr.pay.ApplicationException;
-import com.lxr.pay.CommunicationException;
 
 
 
@@ -75,6 +75,9 @@ public class WXPay {
 	 */
 	public Map<String, String> unifiedOrder(PreOrder preOrder,String tradeType) throws UnifiedorderException {
 		
+		if(preOrder.getNotifyUrl()==null)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+			preOrder.setNotifyUrl(getWxConfig().NOTFIY_URL);
+		
 		// 这里notify_url是 支付完成后微信发给该链接信息，可以判断会员是否支付成功，改变订单状态等。
 		String notify_url = preOrder.getNotifyUrl()+"?out_trade_no="+preOrder.getOutTradeNo();
 
@@ -89,7 +92,7 @@ public class WXPay {
 		packageParams.put("out_trade_no", preOrder.getOutTradeNo());
 
 		// 这里写的金额为1 分到时修改
-		packageParams.put("total_fee", TypeConverUtil.$Str(TypeConverUtil.$int(preOrder.getTotalFee())));
+		packageParams.put("total_fee", WxUtil.yuan2fen(preOrder.getTotalFee())+"");
 		
 		if(TRADE_TYPE_NATIVE.equals(tradeType)){
 			packageParams.put("product_id", preOrder.getProductId());
@@ -104,8 +107,12 @@ public class WXPay {
 				
 			}
 		
+		
+	
+			
 		packageParams.put("notify_url", notify_url);
 		packageParams.put("trade_type", tradeType);
+		if(!TRADE_TYPE_APP.equals(tradeType))
 		packageParams.put("openid", preOrder.getOpenid());
 		
 		try {
@@ -240,7 +247,7 @@ public class WXPay {
 			
 			String sign = notify.remove("sign").toString();
 		if(!WxUtil.createSign(sortedMap, wxConfig.PARTNERKEY).equals(sign))
-		throw new IllegalArgumentException("签名错误");
+			throw new ApplicationException("签名错误");
 		return new PayNotify(sortedMap);
 
 	}

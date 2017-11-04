@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml>
+<appid>
+wx82e1424f8cc75c16
+</appid>
+<!-- #应用秘钥 -->
+<appsecret>8846e26543707ea8ce6ff13c1d78d03d</appsecret>
+
+		
+<!-- #商户号 -->
+<mchid>1490302692</mchid>
+<!-- #这个参数partnerkey是在商户后台配置的一个32位的key,微信商户平台-账户设置-安全设置-api安全 -->
+<parinerkey>942b4914e411ae258244f45c7aba707c</parinerkey>
+<notfiy_url>942b4914e411ae258244f45c7aba707c</notfiy_url>
+
+</xml>

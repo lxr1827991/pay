@@ -1,14 +1,22 @@
 package com.lxr.pay.wxpay;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
+import com.lxr.commons.exception.ApplicationException;
 import com.lxr.commons.utils.MD5Util;
 import com.lxr.commons.utils.TenpayUtil;
 
@@ -27,7 +35,7 @@ public class WxUtil {
 		public static String genPackage(SortedMap<String, String> packageParams,String partnerKey)throws UnsupportedEncodingException {
 			String sign = createSign(packageParams,partnerKey);
 
-			StringBuffer sb = new StringBuffer();
+			StringBuffer sb = new StringBuffer("<xml>");
 			Set es = packageParams.entrySet();
 			Iterator it = es.iterator();
 			while (it.hasNext()) {
@@ -35,13 +43,13 @@ public class WxUtil {
 				String k = (String) entry.getKey();
 				String v = (String) entry.getValue();
 				if (v == null) {
-					throw new RuntimeException(k);
+					throw new RuntimeException(k+"=null");
 				}
-				sb.append(k + "=" + UrlEncode(v) + "&");
+				sb.append("<"+k + ">" + v + "</"+k + ">" );
 			}
 
 			// 去掉最后一个&
-			String packageValue = sb.append("sign=" + sign).toString();
+			String packageValue = sb.append("<sign>"+sign+"</sign></xml>").toString();
 //			System.out.println("UrlEncode后 packageValue=" + packageValue);
 			return packageValue;
 		}
@@ -99,6 +107,58 @@ public class WxUtil {
 			// 四位随机数
 			return TenpayUtil.buildRandom(4) + "";
 
+		}
+		
+		public static Map<String, String> getResult(String xml){
+			 
+	        Document document = null;
+			try {
+				document = DocumentHelper.parseText(xml);
+			} catch (DocumentException e) {
+				throw new ApplicationException("xml解析错误："+e.getMessage());
+			} 
+	        
+ 	        Element root = document.getRootElement();
+ 	        
+ 	        if(!root.getName().equals("xml"))
+ 	        	throw new ApplicationException("根标签错误："+root.getName());
+ 	        
+ 	        List<Element> elements = root.elements();
+ 	        
+ 	       Map<String, String> map = new HashMap<>();
+ 	        for (Element element : elements) {
+				map.put(element.getName(), element.getStringValue());
+			}
+ 	        
+	        
+	        
+	        return map;
+		}
+		
+		
+		public static BigDecimal fen2yuan(int i) {
+			if(i<0)
+				throw new ApplicationException("金额数据不可小于0");
+
+			return new BigDecimal(i).divide(new BigDecimal(100));
+			
+			
+		}
+		
+		public static int yuan2fen(BigDecimal i) {
+			if(i.compareTo(BigDecimal.ZERO)==-1)
+				throw new ApplicationException("金额数据不可小于0");
+
+			 return i.multiply(new BigDecimal(100)).intValue();
+			
+			
+		}
+		
+		
+		public static void main(String[] args) {
+			
+			System.out.println(fen2yuan(0));
+			System.out.println(yuan2fen(new BigDecimal(0)));
 		}
 		
 }

@@ -1,11 +1,16 @@
 package com.example;
 
 import com.lxr.pay.wxpay.WXConfig;
+import com.lxr.pay.wxpay.WxAppPay;
 import com.lxr.pay.wxpay.WxJsapiPay;
 import com.lxr.pay.wxpay.WxpayContext;
 import com.lxr.pay.wxpay.WxpayFactory;
 
 public class wxController {
+	
+	
+	
+	
 	
 	@SuppressWarnings("unused")
 	private void getWxpay() {

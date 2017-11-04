@@ -1,4 +1,4 @@
-package com.lxr.pay;
+package com.lxr.commons.exception;
 
 public class ApplicationException extends RuntimeException{
 

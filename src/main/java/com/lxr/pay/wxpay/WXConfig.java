@@ -20,5 +20,7 @@ public class WXConfig {
 		/**这个参数partnerkey是在商户后台配置的一个32位的key,微信商户平台-账户设置-安全设置-api安全*/
 	public String PARTNERKEY = null;
 	
+	public String NOTFIY_URL = null;
+	
 	
 }

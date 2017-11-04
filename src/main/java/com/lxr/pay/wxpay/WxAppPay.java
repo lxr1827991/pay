@@ -11,9 +11,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import com.lxr.commons.exception.ApplicationException;
 import com.lxr.commons.https.HttpClientConnectionManager;
 import com.lxr.commons.utils.Sha1Util;
-import com.lxr.pay.ApplicationException;
 
 import net.sf.json.JSONObject;
 
@@ -33,18 +33,21 @@ public class WxAppPay extends WXPay{
 	 * @return
 	 * @throws UnifiedorderException
 	 */
-	public Map<String, String> getJspaiPayParam(PreOrder preOrder)throws UnifiedorderException {
+	public Map<String, String> getAppPayParam(PreOrder preOrder)throws UnifiedorderException {
 		Map<String, String> result = super.unifiedOrder(preOrder, TRADE_TYPE_APP);
 		
 		SortedMap<String, String> finalpackage = new TreeMap<String, String>();
-		//finalpackage.put("prepay_id", prepay_id);//这个数据不参与生成支付参数
-		finalpackage.put("appId", wxConfig.APPID);
-		finalpackage.put("timeStamp", Sha1Util.getTimeStamp());
-		finalpackage.put("nonceStr", WxUtil.createNonceStr());
-		finalpackage.put("package", "prepay_id=" +result.get("prepay_id"));
-		finalpackage.put("signType", "MD5");
-		finalpackage.put("paySign", WxUtil.createSign(finalpackage, wxConfig.PARTNERKEY));
+		
+		finalpackage.put("appid", wxConfig.APPID);
+		finalpackage.put("partnerid", wxConfig.MCHID);
+		finalpackage.put("prepayid", result.get("prepay_id"));//这个数据不参与生成支付参数
+		finalpackage.put("package", "Sign=WXPay");
+		finalpackage.put("timestamp", Sha1Util.getTimeStamp());
+		finalpackage.put("noncestr", WxUtil.createNonceStr());
+		finalpackage.put("sign", WxUtil.createSign(finalpackage, wxConfig.PARTNERKEY));
 		return finalpackage;
+		
+	
 	}
    
 	/**

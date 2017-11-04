@@ -33,6 +33,7 @@
 	<classpathentry kind="lib" path="alipay/core-3.2.1.jar"/>
 	<classpathentry kind="lib" path="alipay/javase-3.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/json-lib-2.2-jdk15.jar"/>
+	<classpathentry kind="lib" path="lib/lxr-commons.jar"/>
 	<classpathentry kind="con" path="com.genuitec.runtime.library/com.genuitec.generic_6.0"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

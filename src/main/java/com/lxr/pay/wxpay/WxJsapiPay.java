@@ -1,18 +1,12 @@
 package com.lxr.pay.wxpay;
 
 
-import java.io.IOException;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-
-
-
-
-
 
 import net.sf.json.JSONObject;
 
@@ -26,9 +20,9 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import com.lxr.commons.exception.ApplicationException;
 import com.lxr.commons.https.HttpClientConnectionManager;
 import com.lxr.commons.utils.Sha1Util;
-import com.lxr.pay.ApplicationException;
 
 
 
