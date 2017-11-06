@@ -1,4 +1,4 @@
-package com.lxr.commons.utils;
+package com.lxr.pay.wxpay.utils;
 
 
 import java.io.UnsupportedEncodingException;
