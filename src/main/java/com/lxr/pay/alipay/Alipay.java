@@ -8,27 +8,26 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import javax.imageio.ImageIO;
-import javax.management.Query;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.codec.binary.Base64;
 
 import net.sf.json.JSONObject;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.domain.AlipayTradeAppPayModel;
 import com.alipay.api.domain.AlipayTradePayModel;
+import com.alipay.api.domain.AlipayTradeQueryModel;
+import com.alipay.api.internal.util.AlipaySignature;
+import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.request.AlipayTradeCancelRequest;
 import com.alipay.api.request.AlipayTradePrecreateRequest;
 import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
+import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.alipay.api.response.AlipayTradeCancelResponse;
 import com.alipay.api.response.AlipayTradePrecreateResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
@@ -37,6 +36,7 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
+import com.lxr.commons.exception.ApplicationException;
 
 
 public class Alipay {
@@ -54,8 +54,8 @@ public class Alipay {
 	
 	
 	
-//
-protected static final String URL = "https://openapi.alipaydev.com/gateway.do";
+//https://openapi.alipay.com/gateway.do 
+protected static final String URL = "https://openapi.alipay.com/gateway.do";
 
 //
 protected  String format = "json";
@@ -85,7 +85,12 @@ protected  String charset = "UTF-8";
 	}
 	
 	
-	public void doPay(PrePay prePay,HttpServletResponse httpResponse) throws IOException {
+	
+	
+	
+	
+	
+	public void doPay(AliPrePay prePay,HttpServletResponse httpResponse) throws IOException {
 		  AlipayTradeWapPayRequest alipayRequest = new AlipayTradeWapPayRequest();//鍒涘缓API瀵瑰簲鐨剅equest
 		  if(prePay.getReturnUrl()!=null)
 			  alipayRequest.setReturnUrl(prePay.getReturnUrl());
@@ -119,7 +124,118 @@ protected  String charset = "UTF-8";
 	
 	
 	
-	public String scanPay(PrePay prePay) throws AlipayException {
+	
+	/**
+	 * 
+	 * @param outTradeNo
+	 * @return
+	 */
+	@Deprecated
+	public Object doQuery(String outTradeNo) {
+		
+		if(outTradeNo==null||outTradeNo.equals(""))
+			throw new ApplicationException("outTradeNo:"+outTradeNo);
+		
+		AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
+		
+		AlipayTradeQueryModel model = new AlipayTradeQueryModel();
+		
+		model.setOutTradeNo(outTradeNo);
+		
+		
+		request.setBizModel(model);
+		request.setNotifyUrl(alipayConfigurator.notifyUrl);
+		AlipayTradeQueryResponse response;
+		try {
+			response = alipayClient.sdkExecute(request);
+			
+			return response;
+		} catch (Exception e) {
+			throw new ApplicationException(e);
+		} 
+		
+
+	}
+	
+	
+	
+	
+	
+	public String doAppPay(AliPrePay prePay){
+		
+		
+		
+		AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
+		//SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
+	
+		
+		
+		AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
+		model.setSubject(prePay.getSubject());
+		model.setBody(prePay.getBody());
+		model.setOutTradeNo(prePay.getOutTradeNo());
+		model.setTimeoutExpress("30m");
+		model.setProductCode("QUICK_MSECURITY_PAY");
+		model.setTotalAmount(prePay.getTotalAmount());
+		
+		request.setBizModel(model);
+		request.setNotifyUrl(alipayConfigurator.notifyUrl);
+		AlipayTradeAppPayResponse response;
+		try {
+			response = alipayClient.sdkExecute(request);
+			
+			return response.getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+			throw new ApplicationException(e);
+		} 
+		
+	}
+
+	
+	
+	
+	
+	
+	
+	public String testPay() {
+		AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", alipayConfigurator.appId
+				, alipayConfigurator.appPrivateKey, "json", "utf-8", alipayConfigurator.alipayPublicKey, "RSA2");
+		//实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
+		AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
+		//SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
+		AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
+		model.setBody("我是测试数据");
+		model.setSubject("App支付测试Java");
+		model.setOutTradeNo("21432543");
+		model.setTimeoutExpress("30m");
+		model.setTotalAmount("0.01");
+		model.setProductCode("QUICK_MSECURITY_PAY");
+		request.setBizModel(model);
+		request.setNotifyUrl("商户外网可以访问的异步地址");
+		try {
+		        //这里和普通的接口调用不同，使用的是sdkExecute
+		        AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
+		        System.out.println(response.getBody());//就是orderString 可以直接给客户端请求，无需再做处理。
+		        
+		        return response.getBody();
+		    } catch (AlipayApiException e) {
+		        e.printStackTrace();
+		}
+		
+		return null;
+
+	}
+	
+	
+	/**
+	 * 扫码支付
+	 * @param prePay
+	 * @return
+	 * @throws AlipayException
+	 */
+	public String scanPay(AliPrePay prePay) throws AlipayException {
 		AlipayTradePrecreateRequest alipayTradePrecreateRequest = new AlipayTradePrecreateRequest();//鍒涘缓API瀵瑰簲鐨剅equest绫�
 		alipayTradePrecreateRequest.setNotifyUrl(prePay.getNotifyUrl()==null?alipayConfigurator.notifyUrl:prePay.getNotifyUrl());
 		AlipayTradePayModel model = new AlipayTradePayModel();
@@ -157,7 +273,7 @@ protected  String charset = "UTF-8";
 	
 	
 	
-	 public void scanPay(PrePay prePay,OutputStream out) throws AlipayException {
+	 public void scanPay(AliPrePay prePay,OutputStream out) throws AlipayException {
 		String url = scanPay(prePay);
 		 try {
 	            int qrcodeWidth = 300;
@@ -232,6 +348,25 @@ protected  String charset = "UTF-8";
 	
 	
 	
+	public boolean notifyCheck(Map<String, String> paramsMap) {
+	
+		
+		//切记alipaypublickey是支付宝的公钥，请去open.alipay.com对应应用下查看。
+		//boolean AlipaySignature.rsaCheckV1(Map<String, String> params, String publicKey, String charset, String sign_type)
+		try {
+			return AlipaySignature.rsaCheckV1(paramsMap, alipayConfigurator.alipayPublicKey, charset, "RSA2");
+		} catch (AlipayApiException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		
+				
+
+	}
+	
+	
+	
 	public boolean checkSign(Map<String, String> params) {
 		String sign = params.remove("sign");
 		String signType = params.remove("sign_type");
@@ -289,29 +424,39 @@ protected  String charset = "UTF-8";
 
 	
 	public static void main(String[] args) throws Exception {
-		String sign = "qs7vUcwVFXNFv80pe/pGRt0UV7c9yvQK8GMSRZvjJu5BQkWlFKo"
-				+"l/hm83tEWD4chXr2NOwA3fB fMTP5gheWYCIpZR01C3Yz2ds7S4CN3iad4I brbFEiq/Fzz9zG3PUF9T"
-				+" dxCttie5adT7ccTgKlsRR1HLL tCexo4/HwP/Fbsv4/N/kV1QXOCjUMdyKXNripbYsaBlfvjiKGy/W4"
-				+"GiQzDk508xeqvRpt3kSwadoi/aUcPTefrT yxCPitAQV6CpbdOCLpyfVElSzJEZYqpX2GdpEz5e4F0lY"
-				+"tGfuBw9 ufMOC H8to4DmeQW6mXZh mqE9gCyJqUcSJFhvl eMw==";
-		String sign_type = "RSA";
-		String content
-		= 
-		 "app_id=2016080300159818&auth_app_id=2016080300159818&buyer_id=2088102172232336&b"
-		+"uyer_logon_id=stw***@sandbox.com&buyer_pay_amount=199.99&charset=UTF-8&fund_bill"
-		+"_list=[{\"amount\":\"199.99\",\"fundChannel\":\"ALIPAYACCOUNT\"}]&gmt_create=2017-04-22 "
-		+"09:45:15&gmt_payment=2017-04-22 09:45:28&invoice_amount=199.99&notify_id=862fd3d"
-		+"b0b0a809ff4fcfd22ae2f05fijq&notify_time=2017-04-22 09:45:29&notify_type=trade_st"
-		+"atus_sync&open_id=20881017170417409193523670119533&out_trade_no=1232435465765879"
-		+"&point_amount=0.00&receipt_amount=199.99&seller_email=fjncfe6410@sandbox.com&sel"
-		+"ler_id=2088102169808953&&subject=xxx鍟嗗搧&total_amount=199.99&trade_no=2017042221001004330200278920&trade_status=TRADE_SUCCESS&versi"
-		+"on=1.0";
 		
-		String pk = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2wF+na+fGS5aWySFSnIVCulpPmLgXMa5FH52X1EI1Cub2rUuWX2YnyyWOyLcXmnm9l3vA1b74eDBsi+5TM59aWtHTCafsbxS4+URUsZYbQhrysCCc2ZMR2fMqINTU2bUsJl6qidSSNbFVH84IpElZyxOZUDK4Lt4EucmjXJw6JVknbwb0F9HrX+tnOramhF8ffej4EmJnwK8dKd8DaQf76Cp1EHfhPzW+YyRhCWl6D5janZ4bsfSbqRB2bLY4pXecKAXXoXvrjQ/xGMA1yiz9z0iFsCIDK5MSoy8nUDq1tiDPXepRMeAD2Z31QI5b7Cva2Qx/Iis8oVV2PlOX5+eaQIDAQAB";
-		Base64 base64 = new Base64();
+		Map<String, String> map = new HashMap<>();
 		
-		System.out.println(sign.length());
-		System.out.println(RSAEncrypt.verify(content.getBytes(), pk,sign));
+		map.put("body", "洪城停车余额充值");
+		map.put("subject", "余额充值");
+		map.put("sign_type", "RSA2");
+		map.put("buyer_logon_id", "183****0283");
+		map.put("auth_app_id", "2016122104481405");
+		map.put("notify_type", "trade_status_sync");
+		map.put("out_trade_no", "20171116170043252889240541613341");
+		map.put("point_amount", "0.00");
+		map.put("version", "1.0");
+		map.put("fund_bill_list", "[{\"amount\":\"0.01\",\"fundChannel\":\"ALIPAYACCOUNT\"}]");
+		map.put("buyer_id", "2088222092183919");
+		map.put("total_amount", "0.01");
+		map.put("trade_no", "2017111621001104910577998773");
+		map.put("notify_time", "2017-11-16 17:00:51");
+		map.put("charset", "utf-8");
+		map.put("invoice_amount", "0.01");
+		map.put("trade_status", "TRADE_SUCCESS");
+		map.put("gmt_payment", "2017-11-16 17:00:50");
+		//map.put("sign", "fOUkMrztQ+zctOr7yYVxDObPOHvs9LtF5FgBiopTnomN3zTfCtURHl1gZbp9h1fp0cnuDZ/yqkG5SlIi9LO/g34z84QesTrIeet6oJJ0eekUzaTlDwWSyb1mE4ZwL3igqnKHb9TzLHK7iZzmEylO5LmGER2CuW59xm9Xh1hgPnXaGk/+BsGZ6utOcSp8ejEnjMgFxq6IsJSV829vlgxk5IuxBhp+7XuTiqjxCmyt7zCiY9fLwJUmWSTEKQVpLHtNwlF5wWUJsEsPoRHHJHbGUcgUCZH6pKvggb43+pYFa/euaenZsf0LtW6OiGQsdNDYMoIQTW+sso5zTnyiE6MQSA==");
+		map.put("gmt_create", "2017-11-16 17:00:50");
+		map.put("buyer_pay_amount", "0.01");
+		map.put("receipt_amount", "0.01");
+		map.put("app_id", "2016122104481405");
+		map.put("seller_id", "2088521296419681");
+		map.put("notify_id", "4dc1e9f745c487c369780cdda656824n0x");
+		map.put("seller_email", "zhtc@hcykt.com");
+		
+		System.out.println(AlipayFactory.getPay("/alipay.xml").notifyCheck(map));
+				
+		
 	}
 	
 	

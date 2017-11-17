@@ -13,8 +13,6 @@ public class Main {
 		Main main = new Main();
 		
 		main.init();
-		
-		
 	}
 	
 	private void init() throws Exception {

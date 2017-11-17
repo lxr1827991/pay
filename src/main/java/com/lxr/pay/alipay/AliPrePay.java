@@ -1,6 +1,6 @@
 package com.lxr.pay.alipay;
 
-public class PrePay {
+public class AliPrePay {
 	
 	public String outTradeNo ;
 	public String totalAmount;

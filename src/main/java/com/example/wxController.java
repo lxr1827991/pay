@@ -1,5 +1,6 @@
 package com.example;
 
+import com.lxr.pay.alipay.AlipayFactory;
 import com.lxr.pay.wxpay.WXConfig;
 import com.lxr.pay.wxpay.WxAppPay;
 import com.lxr.pay.wxpay.WxJsapiPay;
@@ -20,6 +21,12 @@ public class wxController {
 		WXConfig config = WxpayContext.config;
 		
 		String o = null;
+	}
+	
+	
+	private void getAlipay() {
+		
+
 	}
 	
 	public static void main(String[] args) {
