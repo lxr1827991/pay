@@ -74,10 +74,10 @@ public class WxUtil {
 				}
 			}
 			sb.append("key=" + partnerKey);
-			System.out.println("md5 sb:" + sb);
+			
 			String sign = MD5Util.MD5Encode(sb.toString(), "UTF-8")
 					.toUpperCase();
-			System.out.println("packge签名:" + sign);
+			
 			return sign;
 
 		}
