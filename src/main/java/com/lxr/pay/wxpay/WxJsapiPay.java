@@ -22,6 +22,8 @@ import org.apache.http.util.EntityUtils;
 
 import com.lxr.commons.exception.ApplicationException;
 import com.lxr.commons.https.HttpClientConnectionManager;
+import com.lxr.pay.wxpay.bean.WxJspaiOrder;
+import com.lxr.pay.wxpay.bean.WxOrder;
 import com.lxr.pay.wxpay.utils.Sha1Util;
 
 
@@ -47,7 +49,7 @@ public class WxJsapiPay extends WXPay{
 	 * @return
 	 * @throws UnifiedorderException
 	 */
-	public Map<String, String> getJspaiPayParam(PreOrder preOrder)throws UnifiedorderException {
+	public Map<String, String> getJspaiPayParam(WxJspaiOrder preOrder)throws UnifiedorderException {
 		Map<String, String> result = super.unifiedOrder(preOrder, TRADE_TYPE_JSAPI);
 		
 		SortedMap<String, String> finalpackage = new TreeMap<String, String>();
@@ -61,6 +63,14 @@ public class WxJsapiPay extends WXPay{
 		return finalpackage;
 	}
    
+	
+	@Override
+	protected void onUnifiedOrder(Map<String, String> map,WxOrder order) {
+		
+		map.put("openid", ((WxJspaiOrder)order).getOpenid());
+		map.put("spbill_create_ip", ((WxJspaiOrder)order).getUserIp());
+	}
+	
 	/**
 	 * 
 	 * @param code 用户受权后微信返回的code

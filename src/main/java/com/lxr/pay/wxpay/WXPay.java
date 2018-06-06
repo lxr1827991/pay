@@ -2,13 +2,9 @@ package com.lxr.pay.wxpay;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.methods.HttpPost;
@@ -16,9 +12,9 @@ import org.apache.http.client.params.ClientPNames;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-
 import com.lxr.commons.exception.ApplicationException;
 import com.lxr.commons.https.HttpClientConnectionManager;
+import com.lxr.pay.wxpay.bean.WxOrder;
 import com.lxr.pay.wxpay.utils.MessageXMLUtil;
 import com.lxr.pay.wxpay.utils.RequestHandler;
 import com.lxr.pay.wxpay.utils.XmlUtils;
@@ -27,6 +23,13 @@ import com.lxr.pay.wxpay.utils.XmlUtils;
 
 
 public class WXPay {
+	
+	
+	public static final String API_UNIFIEDORDER = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+	
+	public static final String API_ORDERQUERY = "https://api.mch.weixin.qq.com/pay/orderquery";
+	
+	public static final String API_CLOSEORDER = "https://api.mch.weixin.qq.com/pay/closeorder";
 
 	
 	public static final String STATE_SUCCESS = "SUCCESS";
@@ -47,10 +50,6 @@ public class WXPay {
 		this.wxConfig = config;
 	}
 	
-	
-	
-	
-
 	public WXConfig getWxConfig() {
 		return wxConfig;
 	}
@@ -65,21 +64,14 @@ public class WXPay {
 
 
 
-
-
 	/**
 	 * jsapi统一下单并返回jsapi支付参数
 	 * @return
 	 * @throws Exception
 	 */
-	public Map<String, String> unifiedOrder(PreOrder preOrder,String tradeType) throws UnifiedorderException {
+	public Map<String, String> unifiedOrder(WxOrder preOrder,String trade_type) throws UnifiedorderException {
 		
-		if(preOrder.getNotifyUrl()==null)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-			preOrder.setNotifyUrl(getWxConfig().NOTFIY_URL);
 		
-		// 这里notify_url是 支付完成后微信发给该链接信息，可以判断会员是否支付成功，改变订单状态等。
-		String notify_url = preOrder.getNotifyUrl()+"?out_trade_no="+preOrder.getOutTradeNo();
-
 		
 		
 		SortedMap<String, String> packageParams = new TreeMap<String, String>();
@@ -87,37 +79,25 @@ public class WXPay {
 		packageParams.put("mch_id", wxConfig.MCHID);
 		packageParams.put("nonce_str", WxUtil.createNonceStr());
 		packageParams.put("body", preOrder.getContent());
-		// packageParams.put("attach", attach);
 		packageParams.put("out_trade_no", preOrder.getOutTradeNo());
-
-		// 这里写的金额为1 分到时修改
 		packageParams.put("total_fee", WxUtil.yuan2fen(preOrder.getTotalFee())+"");
-		
-		if(TRADE_TYPE_NATIVE.equals(tradeType)){
-			packageParams.put("product_id", preOrder.getProductId());
-			packageParams.put("spbill_create_ip", preOrder.getServerIp());
-		}else 
-			if(TRADE_TYPE_JSAPI.equals(tradeType)){
-		packageParams.put("spbill_create_ip", preOrder.getUserIp());
-
-		}else 
-			if(TRADE_TYPE_APP.equals(tradeType)){
-				
-				
-			}
+		packageParams.put("trade_type", trade_type);
 		
 		
-	
-			
+		
+		if(preOrder.getNotifyUrl()==null) preOrder.setNotifyUrl(getWxConfig().NOTFIY_URL);
+		// 这里notify_url是 支付完成后微信发给该链接信息，可以判断会员是否支付成功，改变订单状态等。
+		String notify_url = preOrder.getNotifyUrl()+"?out_trade_no="+preOrder.getOutTradeNo();
 		packageParams.put("notify_url", notify_url);
-		packageParams.put("trade_type", tradeType);
-		if(!TRADE_TYPE_APP.equals(tradeType))
-		packageParams.put("openid", preOrder.getOpenid());
+		
+		
+		onUnifiedOrder(packageParams,preOrder);
+		
 		
 		try {
 			String allParameters = WxUtil.genPackage(packageParams, wxConfig.PARTNERKEY);
 		
-			Map<String, String> map = XmlUtils.doXMLParse(post(wxConfig.API_UNIFIEDORDER, allParameters));
+			Map<String, String> map = XmlUtils.doXMLParse(post(API_UNIFIEDORDER, allParameters));
 			return map;
 		} catch (Exception e) {
 			throw new UnifiedorderException(e);
@@ -125,6 +105,15 @@ public class WXPay {
 
 	
 	}
+	
+	
+	protected void onUnifiedOrder(Map<String, String> map,WxOrder order) {
+		
+
+	}
+	
+	
+	
 	
 	/**
 	 * 
@@ -146,7 +135,7 @@ public class WXPay {
 		reqHandler.init(wxConfig.APPID, wxConfig.APPSECRET, wxConfig.PARTNERKEY);
 			try {
 				String allParameters = reqHandler.genPackage(queryParam);
-				String xml = post(wxConfig.API_ORDERQUERY, allParameters);
+				String xml = post(API_ORDERQUERY, allParameters);
 				WxOrderQuery query = new WxOrderQuery();
 				query.result=XmlUtils.doXMLParse(xml);
 				return query;
@@ -173,7 +162,7 @@ public class WXPay {
 		reqHandler.init(wxConfig.APPID, wxConfig.APPSECRET, wxConfig.PARTNERKEY);
 		try {
 				String allParameters = reqHandler.genPackage(queryParam);
-				String xml = post(wxConfig.API_CLOSEORDER, allParameters);
+				String xml = post(API_CLOSEORDER, allParameters);
 				Map<String, String> result =XmlUtils.doXMLParse(xml);
 				
 				if(!STATE_SUCCESS.equals(result.get("result_code")))

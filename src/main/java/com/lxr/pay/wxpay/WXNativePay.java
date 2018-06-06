@@ -13,6 +13,8 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.lxr.commons.exception.ApplicationException;
+import com.lxr.pay.wxpay.bean.WxNativeOrder;
+import com.lxr.pay.wxpay.bean.WxOrder;
 
 
 
@@ -37,14 +39,24 @@ public class WXNativePay extends WXPay{
 	 * @return
 	 * @throws UnifiedorderException
 	 */
-	public String createQrcodeUrl(PreOrder preOrder)throws UnifiedorderException {
+	public String createQrcodeUrl(WxOrder preOrder)throws UnifiedorderException {
 		Map<String, String> map= super.unifiedOrder(preOrder, TRADE_TYPE_NATIVE);
 		return map.get("code_url");
 	}
 
 	
+	@Override
+	protected void onUnifiedOrder(Map<String, String> map, WxOrder order) {
+		WxNativeOrder nativeOrder = (WxNativeOrder)order;
+		map.put("openid", nativeOrder.getOpenid());
+		
+		
+		map.put("product_id", nativeOrder.getProductId());
+		map.put("spbill_create_ip", nativeOrder.getServerIp());
+	}
 	
-	public void createQrcode(PreOrder prePay,OutputStream out) {
+	
+	public void createQrcode(WxOrder prePay,OutputStream out) {
 		String url = createQrcodeUrl(prePay);
 		 try {
 	           int qrcodeWidth = 300;

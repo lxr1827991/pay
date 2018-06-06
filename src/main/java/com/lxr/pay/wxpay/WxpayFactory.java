@@ -44,8 +44,6 @@ public static <T> T getPay(Class<T> cls,WXConfig config) {
 		
 		
 		
-		WxpayContext.config = config;
-		
 		if(cls == WxJsapiPay.class)
 			return (T) new WxJsapiPay(config);
 		

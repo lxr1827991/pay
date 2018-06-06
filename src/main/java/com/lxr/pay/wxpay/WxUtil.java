@@ -146,6 +146,12 @@ public class WxUtil {
 			
 		}
 		
+		public static int yuan2fen(Double m) {
+			return yuan2fen(BigDecimal.valueOf(m));
+			
+			
+		}
+		
 		public static int yuan2fen(BigDecimal i) {
 			if(i.compareTo(BigDecimal.ZERO)==-1)
 				throw new ApplicationException("金额数据不可小于0");

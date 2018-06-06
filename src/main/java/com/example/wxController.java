@@ -4,7 +4,6 @@ import com.lxr.pay.alipay.AlipayFactory;
 import com.lxr.pay.wxpay.WXConfig;
 import com.lxr.pay.wxpay.WxAppPay;
 import com.lxr.pay.wxpay.WxJsapiPay;
-import com.lxr.pay.wxpay.WxpayContext;
 import com.lxr.pay.wxpay.WxpayFactory;
 
 public class wxController {
@@ -18,7 +17,6 @@ public class wxController {
 	
 		WxJsapiPay jsapiPay = WxpayFactory.getPay(WxJsapiPay.class, "wxpay.properties");
 		
-		WXConfig config = WxpayContext.config;
 		
 		String o = null;
 	}

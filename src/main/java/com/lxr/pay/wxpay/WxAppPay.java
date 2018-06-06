@@ -13,6 +13,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.lxr.commons.exception.ApplicationException;
 import com.lxr.commons.https.HttpClientConnectionManager;
+import com.lxr.pay.wxpay.bean.WxOrder;
 import com.lxr.pay.wxpay.utils.Sha1Util;
 
 import net.sf.json.JSONObject;
@@ -30,10 +31,10 @@ public class WxAppPay extends WXPay{
 	/**
 	 * 获取jsapi支付参数
 	 * @param preOrder
-	 * @return
+	 * @returns
 	 * @throws UnifiedorderException
 	 */
-	public Map<String, String> getAppPayParam(PreOrder preOrder)throws UnifiedorderException {
+	public Map<String, String> doAppPay(WxOrder preOrder)throws UnifiedorderException {
 		Map<String, String> result = super.unifiedOrder(preOrder, TRADE_TYPE_APP);
 		
 		SortedMap<String, String> finalpackage = new TreeMap<String, String>();
@@ -49,6 +50,13 @@ public class WxAppPay extends WXPay{
 		
 	
 	}
+	
+	
+	@Override
+	protected void onUnifiedOrder(Map<String, String> map, WxOrder order) {
+	}
+	
+	
    
 	/**
 	 * 

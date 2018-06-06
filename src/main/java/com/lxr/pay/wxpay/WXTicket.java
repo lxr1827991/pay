@@ -29,10 +29,10 @@ public class WXTicket {
 	private static String TOKEN = "";
 	private static long WX_ALIVE = 7000000;//有效时长
 	
-	public static String getTicket() {
+	public static String getTicket(WXConfig config) {
 		if (TICKET == null || TICKET.isEmpty() || !isAlive()) {
 			try {
-				createNewTicket();
+				createNewTicket(config);
 			} catch (ClientProtocolException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -65,9 +65,9 @@ public class WXTicket {
 	 * @throws IOException 
 	 * @throws ClientProtocolException 
 	 */
-	private static void createNewTicket() throws ClientProtocolException, IOException {
+	private static void createNewTicket(WXConfig config) throws ClientProtocolException, IOException {
 		
-		HttpGet httpGet = HttpClientConnectionManager.getGetMethod("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+WxpayContext.config.APPID+"&secret="+WxpayContext.config.APPSECRET);
+		HttpGet httpGet = HttpClientConnectionManager.getGetMethod("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+config.APPID+"&secret="+config.APPSECRET);
 		
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 		httpclient = (DefaultHttpClient) HttpClientConnectionManager.getSSLInstance(httpclient);
@@ -103,10 +103,10 @@ public class WXTicket {
 		}
 	}
 	
-	public static String getToken() throws Exception {
+	public static String getToken(WXConfig config) throws Exception {
 		if (TICKET == null || TICKET.isEmpty() || !isAlive()) {
 			try {
-				createNewTicket();
+				createNewTicket(config);
 			} catch (ClientProtocolException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
