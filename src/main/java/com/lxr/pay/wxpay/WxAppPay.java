@@ -19,10 +19,6 @@ import com.lxr.pay.wxpay.utils.Sha1Util;
 import net.sf.json.JSONObject;
 
 public class WxAppPay extends WXPay{
-
-	
-
-
 	
 	public WxAppPay(WXConfig config) {
 		super(config);

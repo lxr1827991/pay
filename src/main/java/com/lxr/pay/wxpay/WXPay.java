@@ -69,8 +69,7 @@ public class WXPay {
 	 * @return
 	 * @throws Exception
 	 */
-	public Map<String, String> unifiedOrder(WxOrder preOrder,String trade_type) throws UnifiedorderException {
-		
+	public Map<String, String> unifiedOrder(WxOrder order,String trade_type) throws UnifiedorderException {
 		
 		
 		
@@ -78,28 +77,40 @@ public class WXPay {
 		packageParams.put("appid", wxConfig.APPID);
 		packageParams.put("mch_id", wxConfig.MCHID);
 		packageParams.put("nonce_str", WxUtil.createNonceStr());
-		packageParams.put("body", preOrder.getContent());
-		packageParams.put("out_trade_no", preOrder.getOutTradeNo());
-		packageParams.put("total_fee", WxUtil.yuan2fen(preOrder.getTotalFee())+"");
+		packageParams.put("body", order.getContent());
+		packageParams.put("out_trade_no", order.getOutTradeNo());
+		packageParams.put("total_fee", WxUtil.yuan2fen(order.getTotalFee())+"");
 		packageParams.put("trade_type", trade_type);
 		
 		
+		if(order.getAttach()!=null)
+			packageParams.put("attach", order.getAttach());
 		
-		if(preOrder.getNotifyUrl()==null) preOrder.setNotifyUrl(getWxConfig().NOTFIY_URL);
+		if(order.getNotifyUrl()==null) order.setNotifyUrl(getWxConfig().NOTFIY_URL);
 		// 这里notify_url是 支付完成后微信发给该链接信息，可以判断会员是否支付成功，改变订单状态等。
-		String notify_url = preOrder.getNotifyUrl()+"?out_trade_no="+preOrder.getOutTradeNo();
+		String notify_url = order.getNotifyUrl()+"?out_trade_no="+order.getOutTradeNo();
 		packageParams.put("notify_url", notify_url);
 		
 		
-		onUnifiedOrder(packageParams,preOrder);
+		onUnifiedOrder(packageParams,order);
 		
 		
 		try {
 			String allParameters = WxUtil.genPackage(packageParams, wxConfig.PARTNERKEY);
 		
 			Map<String, String> map = XmlUtils.doXMLParse(post(API_UNIFIEDORDER, allParameters));
+			
+			if(!STATE_SUCCESS.equals(map.get("return_code")))
+				throw new UnifiedorderException("请求支付失败",map.get("return_msg"));
 			return map;
+		}catch (UnifiedorderException e) {
+			
+				System.out.println("微信统一下单错误："+e.getMsg());
+				
+				throw e;
 		} catch (Exception e) {
+			
+			
 			throw new UnifiedorderException(e);
 		}
 
@@ -215,12 +226,12 @@ public class WXPay {
 	}
 	 
 	 
-	 public PayNotify getPayNotify(InputStream in) throws Exception{
+	 public WxPayNotify getPayNotify(InputStream in) throws Exception{
 		 return getPayNotify(MessageXMLUtil.parseXml(in)); 
 		 
 	 }
 	 
-	 public PayNotify getPayNotify(Map<String, String> notify) throws Exception{
+	 public WxPayNotify getPayNotify(Map<String, String> notify) throws Exception{
 		 String return_code = notify.get("return_code").toString();
 			if(!WXResult.SUCCESS.equals(return_code))
 				throw new Exception(""+notify.get("return_msg"));
@@ -236,16 +247,16 @@ public class WXPay {
 			String sign = notify.remove("sign").toString();
 		if(!WxUtil.createSign(sortedMap, wxConfig.PARTNERKEY).equals(sign))
 			throw new ApplicationException("签名错误");
-		return new PayNotify(sortedMap);
+		return new WxPayNotify(sortedMap);
 
 	}
 	 
 	 
-	 public class PayNotify{
+	 public class WxPayNotify{
 		  
 		 Map<String, String> result;
 		 
-		 public PayNotify(Map<String, String> result) throws Exception {
+		 public WxPayNotify(Map<String, String> result) throws Exception {
 				String return_code = result.get("return_code").toString();
 				if(!WXResult.SUCCESS.equals(return_code))
 					throw new Exception(""+result.get("return_msg"));
@@ -265,6 +276,11 @@ public class WXPay {
 
 		}
 		 
+		 
+		 public String getAttach() {
+			 return result.get("attach");
+
+		}
 		 
 		 
 		 public String getTradeType() {

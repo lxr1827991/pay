@@ -14,6 +14,8 @@ public class WxOrder {
 	Double totalFee;
 	//支付通知url
 	String notifyUrl;
+	
+	String attach;
 
 	public String getOutTradeNo() {
 		return outTradeNo;
@@ -55,6 +57,14 @@ public class WxOrder {
 
 	public void setNotifyUrl(String notifyUrl) {
 		this.notifyUrl = notifyUrl;
+	}
+
+	public String getAttach() {
+		return attach;
+	}
+
+	public void setAttach(String attach) {
+		this.attach = attach;
 	}
 
 	

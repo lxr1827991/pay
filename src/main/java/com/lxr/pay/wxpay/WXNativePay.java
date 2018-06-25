@@ -4,8 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -39,7 +37,7 @@ public class WXNativePay extends WXPay{
 	 * @return
 	 * @throws UnifiedorderException
 	 */
-	public String createQrcodeUrl(WxOrder preOrder)throws UnifiedorderException {
+	public String doNativePayUrl2(WxOrder preOrder) {
 		Map<String, String> map= super.unifiedOrder(preOrder, TRADE_TYPE_NATIVE);
 		return map.get("code_url");
 	}
@@ -56,29 +54,6 @@ public class WXNativePay extends WXPay{
 	}
 	
 	
-	public void createQrcode(WxOrder prePay,OutputStream out) {
-		String url = createQrcodeUrl(prePay);
-		 try {
-	           int qrcodeWidth = 300;
-	           int qrcodeHeight = 300;
-	           String qrcodeFormat = "png";
-	           HashMap<EncodeHintType, String> hints = new HashMap<EncodeHintType, String>();
-	           hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-	          
-					BitMatrix bitMatrix = new MultiFormatWriter().encode(url, BarcodeFormat.QR_CODE, qrcodeWidth, qrcodeHeight, hints);
-				
-
-	           BufferedImage image = new BufferedImage(qrcodeWidth, qrcodeHeight, BufferedImage.TYPE_INT_RGB);
-	          // Random random = new Random();
-	           MatrixToImageWriter.writeToStream(bitMatrix, qrcodeFormat, out);
-	          // MatrixToImageWriter.writeToFile(bitMatrix, qrcodeFormat, out);
-					///ImageIO.write(image, qrcodeFormat, out);
-				} catch (Exception e) {
-					throw new ApplicationException(e);
-				} 
-	          // 
-
-	}
 	
 	
 	

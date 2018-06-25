@@ -168,8 +168,6 @@ protected  String charset = "UTF-8";
 		AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
 		//SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
 	
-		
-		
 		AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
 		model.setSubject(prePay.getSubject());
 		model.setBody(prePay.getBody());

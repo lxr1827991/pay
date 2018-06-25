@@ -1,6 +1,9 @@
 package com.lxr.pay.wxpay;
 
 public class UnifiedorderException extends RuntimeException{
+	
+	String msg;
+	
 
 	public UnifiedorderException() {
 		super();
@@ -19,5 +22,22 @@ public class UnifiedorderException extends RuntimeException{
 		super(cause);
 		// TODO Auto-generated constructor stub
 	}
+	
+	public UnifiedorderException(String message,String msg) {
+		super(message);
+		setMsg(msg);
+		// TODO Auto-generated constructor stub
+	}
+
+	public String getMsg() {
+		return msg;
+	}
+
+	public void setMsg(String msg) {
+		this.msg = msg;
+	}
+	
+	
+	
 
 }
