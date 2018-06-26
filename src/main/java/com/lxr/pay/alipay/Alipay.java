@@ -181,7 +181,6 @@ protected  String charset = "UTF-8";
 		AlipayTradeAppPayResponse response;
 		try {
 			response = alipayClient.sdkExecute(request);
-			
 			return response.getBody();
 		} catch (Exception e) {
 			e.printStackTrace();

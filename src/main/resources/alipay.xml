@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xml>
-<appid>应用id</appid>
+<appid>2088131172547726</appid>
 <!-- #应用秘钥 -->
-<appPublicKey>应用公钥</appPublicKey>
-<appPrivateKey>应用私钥</appPrivateKey>
-
+<appPublicKey>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCxSljANAr3+vsD1msYtRp/CL04WdiBl3lkqTWb/c7Ekim7gaYHymzWiLbcPfZ1+FMCQnFfTa5N1ufK+Q6m3RUF5nnDPHmpAGqDykmP5Z6AIaANADXLCyMVynakVDo3WhTCaTlKfoJEeUl8+MF/u4hESAUCRhaxzGp8o/Z2qMNIEQIDAQAB</appPublicKey>
+<appPrivateKey>MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBALFKWMA0Cvf6+wPWaxi1Gn8IvThZ2IGXeWSpNZv9zsSSKbuBpgfKbNaIttw99nX4UwJCcV9Nrk3W58r5DqbdFQXmecM8eakAaoPKSY/lnoAhoA0ANcsLIxXKdqRUOjdaFMJpOUp+gkR5SXz4wX+7iERIBQJGFrHManyj9naow0gRAgMBAAECgYAub/jbL0aIObcyBCG9MQKlr5ZQgkgReamUUjX2i/5ywo4nzQe+Fql3cAvlmF1L/SVQ/DJR8jjrrpS8N4w87L+qggldeq7i+tLUjos72gwBUmtbX4irWJSisfvXuEBlkQPOfa6uDN3RsKRi5GjXfUfJr+wWIX3cnC+3cmwck9ejIQJBAOY1Kpcj0pxNdlDA7Lv2CUZ9fajmXsnQKoNqdm5hmYKvjunkij379IbD7T/EI4PtPa8gjKZf5FxIGBwlMGeDPi0CQQDFJ2dITSIYRI1R7Wo0fLfmqu3oRBNiOQK93jD/lai0/CjyS1wSajzDGLtYxhBHAbvEYffaLIaZf6pSfpSrT0P1AkEA0cHR6+M9LSQ70Trouh9lti/0BqjZ56NgiVvBS7RsjrJuUtnlyLLBzOXLUFXkUnohwWe0IIixaBBcv5B3OWpRhQJAPqgTLus0lrnSn+LwCdZJK8nO6i4YavLraCQhNlj90OcCrF4+2KtivC4z/DaWHbrzTapE9tWHwWjNXIJWBUufsQJBAKlImudSvsZSVPXrLO6GEl4r2ms3Otw0oneZRhoemjSWbe47fYaNxPL6nX8cXyXIBDM68K1V6PhggtbPu5/vk44=</appPrivateKey>
 
 <!-- 支付宝公钥 -->
-<alipayPublicKey>支付宝公钥 </alipayPublicKey>
-<notifyUrl>回调通知地址</notifyUrl>
+<alipayPublicKey>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCnxj/9qwVfgoUh/y2W89L6BkRAFljhNhgPdyPuBV64bfQNN1PjbCzkIM6qRdKBoLPXmKKMiFYnkd6rAoprih3/PrQEB/VsW8OoM8fxn67UDYuyBTqA23MML9q1+ilIZwBC2AQ2UBVOrFXfFl75p6/B5KsiNG9zpgmLCUYuLkxpLQIDAQAB </alipayPublicKey>
+<notifyUrl>https://openapi.alipay.com/gateway.do</notifyUrl><!-- 回调通知地址 -->
 
 </xml>
