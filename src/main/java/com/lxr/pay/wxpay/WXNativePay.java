@@ -46,16 +46,20 @@ public class WXNativePay extends WXPay{
 	@Override
 	protected void onUnifiedOrder(Map<String, String> map, WxOrder order) {
 		WxNativeOrder nativeOrder = (WxNativeOrder)order;
-		map.put("openid", nativeOrder.getOpenid());
-		
-		
+		if(nativeOrder.getProductId()!=null)
 		map.put("product_id", nativeOrder.getProductId());
 		map.put("spbill_create_ip", nativeOrder.getServerIp());
 	}
 	
 	
 	
-	
+	@Override
+	public boolean isHandleNotify(Map<String, String> notifyMap) {
+		// TODO Auto-generated method stub
+		if(!super.isHandleNotify(notifyMap))
+			return false;
+		return TRADE_TYPE_NATIVE.equals(notifyMap.get("trade_type"));
+	}
 	
 	
 	

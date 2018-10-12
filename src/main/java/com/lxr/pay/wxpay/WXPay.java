@@ -12,6 +12,8 @@ import org.apache.http.client.params.ClientPNames;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
+
 import com.lxr.commons.exception.ApplicationException;
 import com.lxr.commons.https.HttpClientConnectionManager;
 import com.lxr.pay.wxpay.bean.WxOrder;
@@ -88,7 +90,7 @@ public class WXPay {
 		
 		if(order.getNotifyUrl()==null) order.setNotifyUrl(getWxConfig().NOTFIY_URL);
 		// 这里notify_url是 支付完成后微信发给该链接信息，可以判断会员是否支付成功，改变订单状态等。
-		String notify_url = order.getNotifyUrl()+"?out_trade_no="+order.getOutTradeNo();
+		String notify_url = order.getNotifyUrl();
 		packageParams.put("notify_url", notify_url);
 		
 		
@@ -101,21 +103,26 @@ public class WXPay {
 			Map<String, String> map = XmlUtils.doXMLParse(post(API_UNIFIEDORDER, allParameters));
 			
 			if(!STATE_SUCCESS.equals(map.get("return_code")))
-				throw new UnifiedorderException("请求支付失败",map.get("return_msg"));
+				throw new UnifiedorderException("请求支付失败","请求："+allParameters+"，返回："+map+"");
 			return map;
 		}catch (UnifiedorderException e) {
-			
-				System.out.println("微信统一下单错误："+e.getMsg());
-				
 				throw e;
 		} catch (Exception e) {
-			
-			
 			throw new UnifiedorderException(e);
 		}
 
 	
 	}
+	
+	
+	public boolean isHandleNotify(Map<String, String> notifyMap) {
+		if(wxConfig.APPID.equals(notifyMap.get("appid")))
+		return true;
+		
+		return false;
+		
+	}
+	
 	
 	
 	protected void onUnifiedOrder(Map<String, String> map,WxOrder order) {
@@ -231,6 +238,10 @@ public class WXPay {
 		 
 	 }
 	 
+	 public WxPayNotify getPayNotify(String xml) throws Exception{
+		 return getPayNotify(WxUtil.getResult(xml)); 
+	 }
+	 
 	 public WxPayNotify getPayNotify(Map<String, String> notify) throws Exception{
 		 String return_code = notify.get("return_code").toString();
 			if(!WXResult.SUCCESS.equals(return_code))
@@ -245,7 +256,9 @@ public class WXPay {
 			else sortedMap = new TreeMap<>(notify);
 			
 			String sign = notify.remove("sign").toString();
-		if(!WxUtil.createSign(sortedMap, wxConfig.PARTNERKEY).equals(sign))
+			String createSign = WxUtil.createSign(sortedMap, wxConfig.PARTNERKEY);
+			System.out.println("签名："+createSign+","+wxConfig.PARTNERKEY);
+		if(!createSign.equals(sign))
 			throw new ApplicationException("签名错误");
 		return new WxPayNotify(sortedMap);
 

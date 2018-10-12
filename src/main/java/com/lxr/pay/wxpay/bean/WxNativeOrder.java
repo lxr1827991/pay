@@ -2,8 +2,7 @@ package com.lxr.pay.wxpay.bean;
 
 public class WxNativeOrder extends WxOrder{
 
-	//
-	String openid;
+	
 	
 	//native支付
 	String serverIp;
@@ -11,12 +10,6 @@ public class WxNativeOrder extends WxOrder{
 	String productId;
 	
 	
-	public String getOpenid() {
-		return openid;
-	}
-	public void setOpenid(String openid) {
-		this.openid = openid;
-	}
 	public String getServerIp() {
 		return serverIp;
 	}

@@ -48,10 +48,21 @@ public class WxAppPay extends WXPay{
 	}
 	
 	
+	
+	
+	
 	@Override
 	protected void onUnifiedOrder(Map<String, String> map, WxOrder order) {
 	}
 	
+	
+	@Override
+	public boolean isHandleNotify(Map<String, String> notifyMap) {
+		// TODO Auto-generated method stub
+		if(!super.isHandleNotify(notifyMap))
+			return false;
+		return TRADE_TYPE_APP.equals(notifyMap.get("trade_type"));
+	}
 	
    
 	/**

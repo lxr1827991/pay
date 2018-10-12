@@ -1,5 +1,6 @@
 package com.example;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,7 +10,6 @@ import com.lxr.pay.alipay.AliPrePay;
 import com.lxr.pay.alipay.Alipay;
 import com.lxr.pay.alipay.AlipayFactory;
 import com.lxr.pay.alipay.AlipayNotify;
-import com.park.api.entity.RechargeOrder;
 
 public class AliPayController {
 
@@ -28,7 +28,7 @@ public class AliPayController {
 		
 		prePay.setSubject("余额充值");
 		prePay.setBody("洪城停车余额充值");
-		prePay.setTotalAmount("10");
+		prePay.setTotalAmount(10.0);
 		String string =  alipay.doAppPay(prePay);
 		
 		return string;
@@ -80,4 +80,22 @@ public class AliPayController {
 		System.out.println(new AliPayController().doPay());
 	}
 	
+	
+public Map<String, String> getParamMap(HttpServletRequest request) {
+		
+		Map<String, String[]> map = request.getParameterMap();
+		
+		Map<String, String> map2 = new HashMap<>();
+		
+		for (Map.Entry<String, String[]> entry : map.entrySet()) {  
+			  
+		    if(entry.getValue()!=null&&entry.getValue().length>0)
+		    	map2.put(entry.getKey(), entry.getValue()[0]);
+		  
+		}
+		
+		
+		return map2;
+
+	}
 }

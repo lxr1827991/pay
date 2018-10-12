@@ -3,7 +3,7 @@ package com.lxr.pay.alipay;
 public class AliPrePay {
 	
 	public String outTradeNo ;
-	public String totalAmount;
+	public Double totalAmount;
 	public String subject;
 	public String productCode;
 	public String body;
@@ -19,10 +19,11 @@ public class AliPrePay {
 	public void setOutTradeNo(String outTradeNo) {
 		this.outTradeNo = outTradeNo;
 	}
-	public String getTotalAmount() {
+	
+	public Double getTotalAmount() {
 		return totalAmount;
 	}
-	public void setTotalAmount(String totalAmount) {
+	public void setTotalAmount(Double totalAmount) {
 		this.totalAmount = totalAmount;
 	}
 	public String getSubject() {

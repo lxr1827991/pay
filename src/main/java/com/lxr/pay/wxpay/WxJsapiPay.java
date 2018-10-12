@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import net.sf.json.JSONObject;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
@@ -20,6 +18,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import com.alibaba.fastjson.JSONObject;
 import com.lxr.commons.exception.ApplicationException;
 import com.lxr.commons.https.HttpClientConnectionManager;
 import com.lxr.pay.wxpay.bean.WxJspaiOrder;
@@ -71,6 +70,15 @@ public class WxJsapiPay extends WXPay{
 		map.put("spbill_create_ip", ((WxJspaiOrder)order).getUserIp());
 	}
 	
+	
+	@Override
+	public boolean isHandleNotify(Map<String, String> notifyMap) {
+		// TODO Auto-generated method stub
+		if(!super.isHandleNotify(notifyMap))
+			return false;
+		return TRADE_TYPE_JSAPI.equals(notifyMap.get("trade_type"));
+	}
+	
 	/**
 	 * 
 	 * @param code 用户受权后微信返回的code
@@ -83,28 +91,16 @@ public class WxJsapiPay extends WXPay{
 			{"errcode":40029,"errmsg":"invalid code"} 
 	 */
 	public String getOpenId(String code) {
-		if(code==null||"".equals(code))
-			throw new ApplicationException("code不能为空");
-			
-		HttpGet get = HttpClientConnectionManager.getGetMethod("https://api.weixin.qq.com/sns/oauth2/access_token?appid="+wxConfig.APPID+"&secret="+wxConfig.APPSECRET+"&code="+code+"&grant_type=authorization_code");
+		JSONObject rest = WxOAuthUtils.requestToken(wxConfig.APPID, wxConfig.APPSECRET, code);
+				
+		return rest.getString("openid");
 	
-			
-			DefaultHttpClient httpclient = new DefaultHttpClient();
-			httpclient = (DefaultHttpClient) HttpClientConnectionManager.getSSLInstance(httpclient);
-			
-			try {
-				HttpResponse response = httpclient.execute(get);
-			
-				String jsonStr = EntityUtils.toString(response.getEntity(), "utf-8");
+		}
+	
+	public JSONObject getAccessToken(String code) {
+		JSONObject rest = WxOAuthUtils.requestToken(wxConfig.APPID, wxConfig.APPSECRET, code);
 				
-				JSONObject rest = JSONObject.fromObject(jsonStr);
-				
-				return rest.getString("openid").toString();
-			}catch (Exception e) {			
-				throw new UnifiedorderException(e);
-				
-			}
-				
+		return rest;
 	
 		}
 	

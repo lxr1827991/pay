@@ -4,7 +4,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -12,6 +14,9 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.jasper.tagplugins.jstl.core.If;
 
 import net.sf.json.JSONObject;
 
@@ -105,7 +110,7 @@ protected  String charset = "UTF-8";
 		  alipayRequest.setBizModel(model);
 		  model.setOutTradeNo(prePay.getOutTradeNo());
 		  model.setSubject(prePay.getSubject());
-		  model.setTotalAmount(prePay.getTotalAmount());
+		  model.setTotalAmount(prePay.getTotalAmount()+"");
 		  model.setProductCode(prePay.getProductCode());
 		  model.setSellerId(alipayConfigurator.sellerId);//娌欑閽卞寘涓殑浠樻鐮�
 		  
@@ -164,22 +169,24 @@ protected  String charset = "UTF-8";
 	public String doAppPay(AliPrePay prePay){
 		
 		
-		
+		try {
 		AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
 		//SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
 	
 		AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
-		model.setSubject(prePay.getSubject());
-		model.setBody(prePay.getBody());
+		if(!StringUtils.isEmpty(prePay.getSubject()))
+		model.setSubject(URLEncoder.encode(prePay.getSubject(), "utf-8"));
+		if(!StringUtils.isEmpty(prePay.getBody()))
+		model.setBody(URLEncoder.encode(prePay.getBody(), "utf-8"));
 		model.setOutTradeNo(prePay.getOutTradeNo());
 		model.setTimeoutExpress("30m");
 		model.setProductCode("QUICK_MSECURITY_PAY");
-		model.setTotalAmount(prePay.getTotalAmount());
+		model.setTotalAmount(prePay.getTotalAmount()+"");
 		
 		request.setBizModel(model);
 		request.setNotifyUrl(alipayConfigurator.notifyUrl);
 		AlipayTradeAppPayResponse response;
-		try {
+		
 			response = alipayClient.sdkExecute(request);
 			return response.getBody();
 		} catch (Exception e) {
@@ -241,7 +248,7 @@ protected  String charset = "UTF-8";
 		
 		model.setOutTradeNo(prePay.getOutTradeNo());
 		model.setStoreId(prePay.getStoreId());
-		model.setTotalAmount(prePay.getTotalAmount());
+		model.setTotalAmount(prePay.getTotalAmount()+"");
 		model.setSubject(prePay.getSubject());
 
 	/*	alipayTradePrecreateRequest.setBizContent("{" +
